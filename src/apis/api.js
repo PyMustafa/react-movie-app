@@ -139,3 +139,5 @@ export const searchMovies = async (query, language, page=1) => {
     console.error("Error searching movies:", error);
     throw error;
   }}
+  
+  
