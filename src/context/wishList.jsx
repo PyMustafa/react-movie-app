@@ -1,29 +1,36 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 
-const wishlist = createContext()
+const WishlistContext = createContext(); // Renamed for clarity
 
-//wishlist provider
+// Wishlist Provider
+export function WishlistProvider({ children }) {
+    const [wishList, setWishList] = useState([]); // Wishlist state
 
-export function WishlistProvider({children}) {
-    const [wishList, setWishList] = useState([]); //wishlist state
-     
-    //add to wishlist function
-    const addToWishlist = (movie) =>
-    {setWishList([...wishList, movie])}
+    // Add to wishlist function
+    const addToWishlist = (movie) => {
+        setWishList([...wishList, movie]);
+    };
 
-    //remove from wishlist function
+    // Remove from wishlist function
     const removeFromWishlist = (movie) => {
-        setWishList(wishList.filter((item) => item.id !== movie.id))
-    }
-    const inWishlist = (movie) => {
-        return wishList.some((item) => item.id === movie.id) //-> returns true if the movie is in the wishlist
-    }
-    return (
-        <wishlist.Provider value={[]}>
-            {children}
-        </wishlist.Provider>
-    )
-}
-export default wishlist
-export const useWishlist = useContext(wishlist) //-> returns the three functions in order, هنخزنهم بعدين ع شان نستخدمهم في الكومبوننت اللي هنعملها
+        setWishList(wishList.filter((item) => item.id !== movie.id));
+    };
 
+    // Check if a movie is in the wishlist
+    const inWishlist = (movie) => {
+        return wishList.some((item) => item.id === movie.id); // Returns true if the movie is in the wishlist
+    };
+
+    return <WishlistContext.Provider value={{ wishList, addToWishlist, removeFromWishlist, inWishlist }}>{children}</WishlistContext.Provider>;
+}
+
+// Custom hook to use the Wishlist context
+export const useWishlist = () => {
+    const context = useContext(WishlistContext);
+    if (!context) {
+        throw new Error("useWishlist must be used within a WishlistProvider");
+    }
+    return context;
+};
+
+export default WishlistContext;
